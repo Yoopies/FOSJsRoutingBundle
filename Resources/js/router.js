@@ -173,18 +173,32 @@ class Router {
      * @return {Router.Route}
      */
     getRoute(name) {
-        let prefixedName = this.context_.prefix + name;
-
-        if (!(prefixedName in this.routes_)) {
-            // Check first for default route before failing
-            if (!(name in this.routes_)) {
-                throw new Error('The route "' + name + '" does not exist.');
-            }
-        } else {
-            name = prefixedName;
+        let prefix = this.context_.prefix;
+        let routingPrefix = '';
+        if (this.context_.prefix.indexOf('__') != -1) {
+            routingPrefix = this.context_.prefix.substring(this.context_.prefix.indexOf('__'));
+            prefix = this.context_.prefix.substring(0, this.context_.prefix.indexOf('__'));
         }
 
-        return this.routes_[name];
+        let prefixParts = prefix.split(/[_-]+/);
+        let routeName = null;
+
+        for (let i = prefixParts.length; i >= 0; i--) {
+            let prefixedName = prefixParts.slice(0, i).join('_') + routingPrefix + name;
+            if (this.routes_.containsKey(prefixedName)) {
+                routeName = prefixedName;
+                break;
+            }
+        }
+        if (null === routeName && this.routes_.containsKey(name)) {
+            routeName = name;
+        }
+
+        if (null === routeName) {
+            throw new Error('The route "' + name + '" does not exist.');
+        }
+
+        return this.routes_.get(routeName);
     }
 
     /**
