@@ -185,12 +185,12 @@ class Router {
 
         for (let i = prefixParts.length; i >= 0; i--) {
             let prefixedName = prefixParts.slice(0, i).join('_') + routingPrefix + name;
-            if (this.routes_.containsKey(prefixedName)) {
+            if (!(prefixedName in this.routes_)) {
                 routeName = prefixedName;
                 break;
             }
         }
-        if (null === routeName && this.routes_.containsKey(name)) {
+        if (null === routeName && !(name in this.routes_)) {
             routeName = name;
         }
 
@@ -198,7 +198,7 @@ class Router {
             throw new Error('The route "' + name + '" does not exist.');
         }
 
-        return this.routes_.get(routeName);
+        return this.routes_[routeName];
     }
 
     /**
