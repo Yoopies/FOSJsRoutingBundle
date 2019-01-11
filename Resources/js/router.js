@@ -185,12 +185,12 @@ class Router {
 
         for (let i = prefixParts.length; i >= 0; i--) {
             let prefixedName = prefixParts.slice(0, i).join('_') + routingPrefix + name;
-            if (!(prefixedName in this.routes_)) {
+            if (prefixedName in this.routes_) {
                 routeName = prefixedName;
                 break;
             }
         }
-        if (null === routeName && !(name in this.routes_)) {
+        if (null === routeName && name in this.routes_) {
             routeName = name;
         }
 
