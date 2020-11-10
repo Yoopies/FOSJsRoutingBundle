@@ -263,9 +263,27 @@ var Router = function () {
             var prefixedSf41i18nName = this.context_.prefix + name + '.' + this.context_.locale;
             var variants = [prefixedName, sf41i18nName, prefixedSf41i18nName, name];
 
-            for (var i in variants) {
-                if (variants[i] in this.routes_) {
-                    return this.routes_[variants[i]];
+            /** Yoopies add some variantes for fallback locales **/
+            var prefix = this.context_.prefix;
+            var routingPrefix = '';
+            if (this.context_.prefix.indexOf('__') !== -1) {
+                routingPrefix = this.context_.prefix.substring(this.context_.prefix.indexOf('__'));
+                prefix = this.context_.prefix.substring(0, this.context_.prefix.indexOf('__'));
+            }
+
+            var prefixParts = prefix.split(/[_-]+/);
+
+            for (var i = prefixParts.length; i >= 0; i--) {
+                var _prefixedName = prefixParts.slice(0, i).join('_') + routingPrefix + name;
+                if (!variants.includes(_prefixedName)) {
+                    variants.push(_prefixedName);
+                }
+            }
+            /** End Yoopies **/
+
+            for (var _i in variants) {
+                if (variants[_i] in this.routes_) {
+                    return this.routes_[variants[_i]];
                 }
             }
 

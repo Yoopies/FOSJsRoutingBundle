@@ -195,6 +195,24 @@ class Router {
         let prefixedSf41i18nName = this.context_.prefix + name + '.' + this.context_.locale;
         let variants = [prefixedName, sf41i18nName, prefixedSf41i18nName, name];
 
+        /** Yoopies add some variantes for fallback locales **/
+        let prefix = this.context_.prefix;
+        let routingPrefix = '';
+        if (this.context_.prefix.indexOf('__') !== -1) {
+            routingPrefix = this.context_.prefix.substring(this.context_.prefix.indexOf('__'));
+            prefix = this.context_.prefix.substring(0, this.context_.prefix.indexOf('__'));
+        }
+
+        let prefixParts = prefix.split(/[_-]+/);
+
+        for (let i = prefixParts.length; i >= 0; i--) {
+            let prefixedName = prefixParts.slice(0, i).join('_') + routingPrefix + name;
+            if (!variants.includes(prefixedName)) {
+                variants.push(prefixedName)
+            }
+        }
+        /** End Yoopies **/
+
         for (let i in variants) {
             if (variants[i] in this.routes_) {
                 return this.routes_[variants[i]];
